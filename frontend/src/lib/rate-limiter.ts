@@ -78,13 +78,12 @@ export async function checkRateLimit(
   const clientIp = getTrustedClientIp(request);
 
   if (!supabaseAdmin) {
-    console.error("Supabase not configured for rate limiting. Blocking requests until configuration is fixed.");
+    console.warn("Supabase not configured for rate limiting. Allowing requests to proceed without rate limiting.");
     return {
-      allowed: false,
+      allowed: true,
       limit: finalConfig.maxRequests,
-      remaining: 0,
+      remaining: finalConfig.maxRequests,
       resetTime: new Date(Date.now() + finalConfig.windowMs),
-      error: "Rate limiting configuration error.",
     };
   }
 
