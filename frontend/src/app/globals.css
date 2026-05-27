@@ -106,15 +106,11 @@ article {
     0 0 12px rgba(255, 255, 255, 0.75),
     0 0 24px rgba(255, 255, 255, 0.25);
   transition:
-    width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    height 0.4s cubic-bezier(0.22, 1, 0.36, 1),
     background 0.4s ease,
     box-shadow 0.4s ease;
 }
 
 .custom-cursor__dot.is-hover {
-  width: 5px;
-  height: 5px;
   background: #ffffff;
   box-shadow:
     0 0 16px rgba(255, 255, 255, 0.95),
@@ -131,16 +127,12 @@ article {
     0 0 44px rgba(255, 255, 255, 0.03),
     inset 0 0 16px rgba(255, 255, 255, 0.03);
   transition:
-    width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.45s ease,
     background 0.45s ease,
     box-shadow 0.45s ease;
 }
 
 .custom-cursor__ring.is-hover {
-  width: 58px;
-  height: 58px;
   border-color: rgba(255, 255, 255, 0.65);
   background: rgba(255, 255, 255, 0.05);
   box-shadow:

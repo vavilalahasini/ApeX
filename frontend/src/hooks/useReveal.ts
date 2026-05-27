@@ -21,7 +21,8 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>({
   const [isRevealed, setIsRevealed] = useState(disabled);
 
   useEffect(() => {
-    if (disabled) {
+    const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
+    if (disabled || isMobile) {
       setIsRevealed(true);
       return;
     }
