@@ -2,7 +2,7 @@ import Script from "next/script";
 
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
-export function Analytics() {
+export function Analytics({ nonce }: { nonce?: string }) {
   if (!gaId) return null;
 
   return (
@@ -10,8 +10,9 @@ export function Analytics() {
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
         strategy="afterInteractive"
+        nonce={nonce}
       />
-      <Script id="ga-init" strategy="afterInteractive">
+      <Script id="ga-init" strategy="afterInteractive" nonce={nonce}>
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}

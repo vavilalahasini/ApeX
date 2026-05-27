@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { DM_Sans, Syne, Instrument_Serif } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
 import { SkipToContent } from "@/components/layout/SkipToContent";
@@ -31,11 +32,13 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = baseMetadata();
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const nonce = headersList.get('x-nonce') || '';
   const orgLd = organizationJsonLd();
   const siteLd = websiteJsonLd();
 
@@ -43,12 +46,14 @@ export default function RootLayout({
     <html lang="en" className={`${syne.variable} ${dmSans.variable} ${instrumentSerif.variable}`}>
       <head>
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(orgLd),
           }}
         />
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(siteLd),
@@ -58,7 +63,7 @@ export default function RootLayout({
       <body className="antialiased">
         <SkipToContent />
         {children}
-        <Analytics />
+        <Analytics nonce={nonce} />
       </body>
     </html>
   );
