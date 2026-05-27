@@ -65,7 +65,7 @@ export default function AdminDashboard({
       const { submissions: newSubmissions, nextCursor: newCursor, hasMore: newHasMore } = result.data;
 
       // Filter out any duplicates based on ID
-      const uniqueSubmissions = newSubmissions.filter(s => !loadedIds.has(s.id));
+      const uniqueSubmissions = newSubmissions.filter((s: Submission) => !loadedIds.has(s.id));
 
       if (uniqueSubmissions.length === 0) {
         setHasMore(false);
@@ -74,7 +74,7 @@ export default function AdminDashboard({
       }
 
       // Update loaded IDs to include new submissions
-      setLoadedIds(prev => new Set([...prev, ...uniqueSubmissions.map(s => s.id)]));
+      setLoadedIds(prev => new Set([...prev, ...uniqueSubmissions.map((s: Submission) => s.id)]));
 
       // Append new submissions to existing ones
       setSubmissions(prev => [...prev, ...uniqueSubmissions]);

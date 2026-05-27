@@ -14,13 +14,14 @@ export default async function AdminPage() {
   }
 
   // Fetch dashboard data through a protected API route for admin operations.
-  const host = headers().get('x-forwarded-host') ?? headers().get('host');
-  const proto = headers().get('x-forwarded-proto') ?? 'https';
+  const headersList = await headers();
+  const host = headersList.get('x-forwarded-host') ?? headersList.get('host');
+  const proto = headersList.get('x-forwarded-proto') ?? 'https';
   const origin = host ? `${proto}://${host}` : process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
   const response = await fetch(`${origin}/api/admin/contact?includeStats=true&limit=20`, {
     cache: 'no-store',
     headers: {
-      cookie: headers().get('cookie') ?? '',
+      cookie: headersList.get('cookie') ?? '',
     },
   });
 

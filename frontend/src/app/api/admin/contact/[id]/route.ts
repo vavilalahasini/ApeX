@@ -2,19 +2,15 @@ import { NextResponse } from 'next/server';
 import { protectAdminRoute } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase-server';
 
-interface Params {
-  params: {
-    id: string;
-  };
-}
-
-export async function DELETE(_request: Request, { params }: Params) {
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
   const auth = await protectAdminRoute();
   if (!auth || !auth.authorized) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
-
-  const { id } = params;
   if (!id) {
     return NextResponse.json({ success: false, error: 'Submission id is required.' }, { status: 400 });
   }
