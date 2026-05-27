@@ -1,24 +1,53 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { sendContactNotificationEmails } from "@/lib/resend";
-import { rateLimitMiddleware } from "@/lib/rate-limiter";
+import { getTrustedClientIp } from "@/lib/rate-limiter";
 import { captchaMiddleware, extractCaptchaToken } from "@/lib/captcha";
 import { contactFormSchema } from "@/lib/validation/contact";
 import type { ContactFormPayload } from "@/types";
 
-export async function POST(request: Request) {
-  try {
-    const rateLimitResult = await rateLimitMiddleware(request, {
-      maxRequests: 5,
-      windowMs: 60 * 60 * 1000,
-    });
+// Simple in-memory rate limiter for contact form
+const contactRateLimitStore = new Map<string, { count: number; expiresAt: number }>();
+const MAX_REQUESTS_PER_HOUR = 10;
+const WINDOW_SECONDS = 60 * 60; // 1 hour
 
-    if (!rateLimitResult.allowed && rateLimitResult.response) {
-      return rateLimitResult.response;
-    }
-  } catch (rateLimitError) {
-    console.error("Rate limiting error, allowing request to proceed:", rateLimitError);
-    // Fail open on rate limiting errors to prevent blocking legitimate requests
+function checkContactRateLimit(ip: string): { allowed: boolean; remaining: number; resetTime: number } {
+  const now = Date.now();
+  const entry = contactRateLimitStore.get(ip);
+
+  if (!entry || entry.expiresAt <= now) {
+    // No existing entry or window expired, allow request
+    contactRateLimitStore.set(ip, { count: 1, expiresAt: now + WINDOW_SECONDS * 1000 });
+    return { allowed: true, remaining: MAX_REQUESTS_PER_HOUR - 1, resetTime: now + WINDOW_SECONDS * 1000 };
+  }
+
+  if (entry.count >= MAX_REQUESTS_PER_HOUR) {
+    // Rate limit exceeded
+    return { allowed: false, remaining: 0, resetTime: entry.expiresAt };
+  }
+
+  // Increment counter and allow request
+  entry.count += 1;
+  return { allowed: true, remaining: MAX_REQUESTS_PER_HOUR - entry.count, resetTime: entry.expiresAt };
+}
+
+export async function POST(request: Request) {
+  // Apply rate limiting using simple in-memory store
+  const ip = getTrustedClientIp(request);
+  const rateLimitResult = checkContactRateLimit(ip);
+
+  if (!rateLimitResult.allowed) {
+    const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later.", retryAfter },
+      {
+        status: 429,
+        headers: {
+          "Content-Type": "application/json",
+          "Retry-After": retryAfter.toString(),
+        },
+      }
+    );
   }
 
   const body = await request.json();
