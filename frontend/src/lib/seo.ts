@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
 
-const siteUrl = (() => {
-  const url = process.env.NEXT_PUBLIC_SITE_URL;
-  if (url) return url;
-  if (process.env.NODE_ENV === "development") {
-    return "http://localhost:3000";
-  }
-  throw new Error("CRITICAL_BUILD_ERROR: NEXT_PUBLIC_SITE_URL environment variable is required in production but was not found.");
-})();
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://apex-studio-mu.vercel.app';
 
 export function getSiteConfigData() {
   // Static fallback config for static site generation

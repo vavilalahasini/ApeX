@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_SITE_URL) {
-  throw new Error("CRITICAL_BUILD_ERROR: NEXT_PUBLIC_SITE_URL environment variable is required in production but was not found.");
+  console.warn("WARNING: NEXT_PUBLIC_SITE_URL environment variable is not set. Using fallback URL: https://apex-studio-mu.vercel.app");
 }
 
 const nextConfig: NextConfig = {

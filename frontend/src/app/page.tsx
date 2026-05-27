@@ -25,8 +25,7 @@ import type { Hero as HeroType, Services as ServicesType, Marquee as MarqueeType
 export const dynamic = "force-static";
 
 export default function Home() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
-                  (process.env.NODE_ENV === "development" ? "http://localhost:3000" : "");
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://apex-studio-mu.vercel.app';
   
   const siteConfigWithUrl: SiteConfigType = {
     ...siteConfig,
