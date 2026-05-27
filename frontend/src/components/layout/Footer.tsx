@@ -1,14 +1,30 @@
-import Link from "next/link";
-import type { Contact, SiteConfig } from "@/lib/types";
+"use client";
 
-export function Footer({ 
-  contactData, 
-  siteConfig 
-}: { 
-  contactData: Contact; 
-  siteConfig: SiteConfig; 
-}) {
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { fetchContent, type Contact, type SiteConfig } from "@/lib/client-data";
+
+import contactDataJson from "../../../data/contact.json";
+import siteConfigDataJson from "../../../data/site-config.json";
+
+export function Footer() {
+  const [contactData, setContactData] = useState<Contact | null>(contactDataJson as unknown as Contact);
+  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(siteConfigDataJson as unknown as SiteConfig);
   const year = new Date().getFullYear();
+
+  useEffect(() => {
+    Promise.all([
+      fetchContent<Contact>("contact"),
+      fetchContent<SiteConfig>("site-config"),
+    ]).then(([contact, config]) => {
+      setContactData(contact);
+      setSiteConfig(config);
+    });
+  }, []);
+
+  if (!contactData || !siteConfig) {
+    return null;
+  }
 
   return (
     <footer className="relative border-t border-[rgba(255,255,255,0.08)] bg-[#04050d] text-white z-10">
@@ -32,10 +48,10 @@ export function Footer({
               <p className="text-sm text-white/70">
                 <span className="font-medium text-white">Get in Touch:</span>{' '}
                 <a
-                  href={`mailto:${contactData.email}`}
+                  href="mailto:teamapex.contact@gmail.com"
                   className="inline-flex rounded-2xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-white/70 transition duration-300 hover:bg-white/10 hover:text-white hover:border-[#AAFF00]/30 hover:shadow-[0_0_24px_rgba(170,255,0,0.12)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60 active:scale-95"
                 >
-                  {contactData.email}
+                  teamapex.contact@gmail.com
                 </a>
               </p>
             </div>
@@ -141,7 +157,7 @@ export function Footer({
           <p className="text-sm text-text-muted/70">
             © {year} {siteConfig.name}. All rights reserved.
           </p>
-          {contactData.socialLinks && contactData.socialLinks.length > 0 && (
+          {contactData.socialLinks.length > 0 && (
             <ul className="flex flex-wrap items-center gap-4">
               {contactData.socialLinks.map((link) => (
                 <li key={link.label}>
@@ -152,7 +168,7 @@ export function Footer({
                     className="footer-link-yg group relative text-xs uppercase tracking-[0.2em] text-text-muted transition-colors duration-300 min-h-[44px] inline-flex items-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#AAFF00]"
                   >
                     {link.label}
-                    <span className="absolute -bottom-1 left-0 w-full h-px bg-[#AAFF00] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-200" />
+                    <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#AAFF00] group-hover:w-full transition-all duration-300" />
                   </a>
                 </li>
               ))}

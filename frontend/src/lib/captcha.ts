@@ -181,11 +181,9 @@ export async function validateCaptcha(
   }
 
   if (!finalConfig.secretKey) {
-    console.error("CRITICAL_CONFIG_ERROR: CAPTCHA is enabled but secretKey is missing from environment.");
-    return {
-      valid: false,
-      error: "CAPTCHA configuration error. Verification unavailable.",
-    };
+    console.error("CAPTCHA is enabled but secret key is not configured");
+    // Fail open if misconfigured to avoid blocking legitimate users
+    return { valid: true };
   }
 
   switch (finalConfig.provider) {
@@ -203,11 +201,7 @@ export async function validateCaptcha(
       // Implement custom CAPTCHA validation logic here
       return { valid: true };
     default:
-      console.error(`CAPTCHA_CONFIG_ERROR: Unsupported CAPTCHA provider "${finalConfig.provider}".`);
-      return {
-        valid: false,
-        error: "Unsupported CAPTCHA provider configuration.",
-      };
+      return { valid: true };
   }
 }
 

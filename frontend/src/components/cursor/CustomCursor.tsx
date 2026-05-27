@@ -22,8 +22,6 @@ export function CustomCursor() {
   const ring = useRef<Vec2>({ x: 0, y: 0 });
   const magnetic = useRef<Vec2 | null>(null);
   const hovering = useRef(false);
-  const dotScale = useRef(1);
-  const ringScale = useRef(1);
   const rafId = useRef(0);
 
   useEffect(() => {
@@ -66,20 +64,14 @@ export function CustomCursor() {
       ring.current.x += (mouse.current.x - ring.current.x) * RING_LERP;
       ring.current.y += (mouse.current.y - ring.current.y) * RING_LERP;
 
-      const targetDotScale = hovering.current ? 0.625 : 1;
-      const targetRingScale = hovering.current ? 1.7 : 1;
-
-      dotScale.current += (targetDotScale - dotScale.current) * 0.15;
-      ringScale.current += (targetRingScale - ringScale.current) * 0.15;
-
       const dotEl = dotRef.current;
       const ringEl = ringRef.current;
 
       if (dotEl) {
-        dotEl.style.transform = `translate3d(${dot.current.x}px, ${dot.current.y}px, 0) translate(-50%, -50%) scale(${dotScale.current})`;
+        dotEl.style.transform = `translate3d(${dot.current.x}px, ${dot.current.y}px, 0) translate(-50%, -50%)`;
       }
       if (ringEl) {
-        ringEl.style.transform = `translate3d(${ring.current.x}px, ${ring.current.y}px, 0) translate(-50%, -50%) scale(${ringScale.current})`;
+        ringEl.style.transform = `translate3d(${ring.current.x}px, ${ring.current.y}px, 0) translate(-50%, -50%)`;
       }
 
       rafId.current = requestAnimationFrame(tick);

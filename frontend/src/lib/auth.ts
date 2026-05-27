@@ -34,7 +34,30 @@ export async function isAdmin(user?: { id?: string; email?: string } | null) {
       if (!error && data) return true;
     }
 
-    // Check by email in admins table if the user has an email but wasn't matched by user_id
+    // If no admins exist yet, allow env-based admin emails for backward compatibility
+    const { data: adminsList, error: listError } = await supabase
+      .from('admins')
+      .select('id')
+      .limit(1);
+
+    if (listError) {
+      console.error('Error checking admins table:', listError);
+      return false;
+    }
+
+    if (!adminsList || (Array.isArray(adminsList) && adminsList.length === 0)) {
+      const adminEmailsRaw = process.env.SUPABASE_ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || '';
+      const adminEmails = adminEmailsRaw
+        .split(',')
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean);
+
+      if (currentUser.email && adminEmails.includes(currentUser.email.toLowerCase())) {
+        return true;
+      }
+    }
+
+    // Finally, if user provided an email but was not found above, check by email in admins table
     if (currentUser.email) {
       const { data: byEmail, error: byEmailErr } = await supabase
         .from('admins')

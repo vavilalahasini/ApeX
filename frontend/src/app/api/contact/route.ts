@@ -31,13 +31,14 @@ function validatePayload(data: unknown): data is ContactFormPayload {
     }
   }
 
-  // Check for suspicious HTML or BBCode spam patterns (not simple plain text URLs)
+  // Check for suspicious patterns commonly used by bots
   const suspiciousPatterns = [
-    /href\s*=/i,
-    /<a\s+/i,
+    /http/i,
+    /www\./i,
+    /\.com/i,
+    /href/i,
+    /<a /i,
     /<script/i,
-    /\[url\s*=/i,
-    /\[link\s*=/i,
   ];
 
   const message = payload.message as string;
@@ -45,13 +46,6 @@ function validatePayload(data: unknown): data is ContactFormPayload {
     if (pattern.test(message)) {
       return false;
     }
-  }
-
-  // Count URLs to prevent link-bombing spam.
-  const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
-  const urls = message.match(urlRegex) || [];
-  if (urls.length > 3) {
-    return false; // Limit to max 3 URLs in a message
   }
 
   // Check for excessively long submissions (potential DoS)
@@ -135,20 +129,16 @@ export async function POST(request: Request) {
     );
   }
 
-  let emailSent = true;
   try {
     await sendContactNotificationEmails(payload);
   } catch (sendError: unknown) {
+    const message = sendError instanceof Error ? sendError.message : String(sendError);
     console.error('Contact notification email failed:', sendError);
-    emailSent = false;
-  }
-
-  if (!emailSent) {
     return NextResponse.json(
-      { success: true, emailSent: false, queued: true },
-      { status: 201 }
+      { error: `Contact request saved, but email delivery failed: ${message}` },
+      { status: 500 }
     );
   }
 
-  return NextResponse.json({ success: true, emailSent: true }, { status: 201 });
+  return NextResponse.json({ success: true }, { status: 201 });
 }

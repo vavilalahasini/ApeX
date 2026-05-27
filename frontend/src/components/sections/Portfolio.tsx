@@ -1,13 +1,16 @@
+"use client";
+
 import type { CSSProperties } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { RevealGroup, RevealItem } from "@/components/ui/RevealGroup";
-import type { Portfolio as PortfolioType } from "@/lib/types";
+import { usePortfolio } from "@/hooks/useContent";
+import type { PortfolioProject } from "@/types";
 
 function ProjectCard({
   project,
   index,
 }: {
-  project: PortfolioType["projects"][number];
+  project: PortfolioProject;
   index: number;
 }) {
   const spans =
@@ -21,7 +24,7 @@ function ProjectCard({
     <RevealItem
       as="article"
       index={index}
-      className={`group relative rounded-2xl overflow-hidden border border-[rgba(255,255,255,0.08)] bg-bg-elevated hover:border-[rgba(255,255,255,0.18)] transition-colors duration-200 ${spans}`}
+      className={`group relative rounded-2xl overflow-hidden border border-[rgba(255,255,255,0.08)] bg-bg-elevated hover:border-[rgba(255,255,255,0.18)] transition-colors duration-500 ${spans}`}
     >
       <a
         href={project.href}
@@ -47,11 +50,11 @@ function ProjectCard({
         aria-hidden
       />
 
-      <div className="absolute inset-0 bg-bg-deep/40 group-hover:bg-bg-deep/20 transition-colors duration-200" aria-hidden />
+      <div className="absolute inset-0 bg-bg-deep/40 group-hover:bg-bg-deep/20 transition-colors duration-500" aria-hidden />
 
       <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-10 z-10 pointer-events-none">
         <span
-          className="portfolio-cta-yg inline-flex items-center gap-2 text-sm mb-3 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-[opacity,transform] duration-200"
+          className="portfolio-cta-yg inline-flex items-center gap-2 text-sm mb-3 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500"
         >
           View Case Study
           <span aria-hidden>→</span>
@@ -59,18 +62,13 @@ function ProjectCard({
         <p className="text-xs uppercase tracking-[0.2em] text-text-muted mb-2">
           {project.category}
         </p>
-        <h3 className="font-[family-name:var(--font-syne)] text-2xl md:text-4xl font-bold tracking-tight text-text-primary mb-1">
+        <h3 className="font-[family-name:var(--font-syne)] text-2xl md:text-4xl font-bold tracking-tight text-text-primary">
           {project.title}
         </h3>
-        {project.description && (
-          <p className="text-xs text-text-muted max-w-md line-clamp-2">
-            {project.description}
-          </p>
-        )}
       </div>
 
       <div
-        className="absolute inset-0 pointer-events-none transition-transform duration-300 ease-out group-hover:scale-105"
+        className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out group-hover:scale-105"
         style={{
           background: `radial-gradient(circle at 30% 70%, color-mix(in srgb, ${project.accent} 13%, transparent) 0%, transparent 50%)`,
         }}
@@ -80,7 +78,27 @@ function ProjectCard({
   );
 }
 
-export function Portfolio({ portfolioData, className }: { portfolioData: PortfolioType; className?: string }) {
+export function Portfolio({ className }: { className?: string }) {
+  const { data: portfolioData, loading } = usePortfolio();
+
+  if (loading) {
+    return (
+      <section id="work" className={`relative section-padding z-10 ${className || ''}`} aria-labelledby="work-heading">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-800 rounded w-1/4" />
+          <div className="h-12 bg-gray-800 rounded w-1/2" />
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-64 bg-gray-800 rounded" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!portfolioData) return null;
+
   return (
     <section id="work" className={`relative section-padding z-10 ${className || ''}`} aria-labelledby="work-heading">
       <SectionHeading

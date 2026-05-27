@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://apex-studio-mu.vercel.app';
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://apex-studio-mu.vercel.app";
 
 export function getSiteConfigData() {
   // Static fallback config for static site generation
@@ -11,8 +12,8 @@ export function getSiteConfigData() {
       "Build a stronger online presence with ApeX. Premium websites, AI product posters, and cinematic 3D web experiences for modern brands.",
     url: siteUrl,
     ogImage: `${siteUrl}/og-image.png`,
-    twitter: "@apex_studio",
-    email: "teamapex.contact@gmail.com",
+    twitter: "",
+    email: "",
     keywords: [
       "digital studio",
       "web design",

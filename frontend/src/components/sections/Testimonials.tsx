@@ -1,39 +1,66 @@
-import { GlassPanel } from "@/components/ui/GlassPanel";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { RevealGroup, RevealItem } from "@/components/ui/RevealGroup";
-import type { Testimonials as TestimonialsType } from "@/lib/types";
+"use client";
 
-export function Testimonials({ testimonialsData, className }: { testimonialsData: TestimonialsType; className?: string }) {
+import { RevealGroup, RevealItem } from "@/components/ui/RevealGroup";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Card } from "@/components/ui/Card";
+import { useTestimonials } from "@/hooks/useContent";
+
+export function Testimonials({ className }: { className?: string }) {
+  const { data: testimonialsData, loading } = useTestimonials();
+
+  if (loading) {
+    return (
+      <section
+        id="testimonials"
+        className={`relative section-padding z-10 ${className || ''}`}
+        aria-labelledby="testimonials-heading"
+      >
+        <div className="animate-pulse space-y-4 max-w-6xl mx-auto">
+          <div className="h-8 bg-gray-800 rounded w-1/4 mx-auto" />
+          <div className="h-12 bg-gray-800 rounded w-1/2 mx-auto" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-48 bg-gray-800 rounded" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!testimonialsData || testimonialsData.testimonials.length === 0) {
+    return null;
+  }
+
   return (
-    <section className={`relative section-padding z-10 ${className || ''}`} aria-labelledby="testimonials-heading">
+    <section
+      id="testimonials"
+      className={`relative section-padding z-10 ${className || ''}`}
+      aria-labelledby="testimonials-heading"
+    >
       <SectionHeading
         label={testimonialsData.section.label}
         title={testimonialsData.section.title}
         subtitle={testimonialsData.section.subtitle}
+        align="center"
       />
 
-      <RevealGroup className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {testimonialsData.testimonials.map((testimonial, index) => (
-          <RevealItem key={index} index={index}>
-            <GlassPanel className="rounded-2xl p-8 md:p-10 h-full flex flex-col justify-between hover:border-[#AAFF00]/10 transition-colors duration-300">
-              <div>
-                {/* Quote Icon */}
-                <span className="text-4xl text-[#AAFF00]/20 font-serif leading-none block mb-4" aria-hidden>
-                  “
-                </span>
-                <p className="text-sm md:text-base text-text-primary leading-relaxed italic mb-8">
-                  {testimonial.quote}
+      <RevealGroup className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 max-w-6xl mx-auto">
+        {testimonialsData.testimonials.map((item, i) => (
+          <RevealItem key={item.author} index={i}>
+            <Card as="article" className="p-8 h-full flex flex-col">
+              <blockquote className="text-base text-text-muted leading-relaxed mb-6 flex-1">
+                &ldquo;{item.quote}&rdquo;
+              </blockquote>
+              <footer>
+                <p className="testimonial-author-yg font-[family-name:var(--font-syne)] font-semibold">
+                  {item.author}
                 </p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold testimonial-author-yg">
-                  {testimonial.author}
+                <p className="text-sm text-text-muted">
+                  {item.role}, {item.company}
                 </p>
-                <p className="text-xs text-text-muted mt-1">
-                  {testimonial.role}, {testimonial.company}
-                </p>
-              </div>
-            </GlassPanel>
+              </footer>
+            </Card>
           </RevealItem>
         ))}
       </RevealGroup>

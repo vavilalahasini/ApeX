@@ -64,7 +64,6 @@ export interface Portfolio {
     accent: string;
     href: string;
     slug: string;
-    description?: string;
   }>;
 }
 
@@ -89,7 +88,6 @@ export interface Contact {
     subtitle: string;
   };
   email: string;
-  whatsapp?: string;
   services: string[];
   socialLinks: Array<{ label: string; href: string }>;
 }
