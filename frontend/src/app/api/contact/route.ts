@@ -94,6 +94,15 @@ export async function POST(request: Request) {
   }
 
   const payload = body as ContactFormPayload;
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!EMAIL_RE.test(payload.email.trim())) {
+    return NextResponse.json(
+      { error: "Please enter a valid email address." },
+      { status: 400 }
+    );
+  }
+
   const tableName = process.env.SUPABASE_CONTACT_TABLE || "contact_requests";
 
   if (!supabaseAdmin) {
@@ -107,10 +116,9 @@ export async function POST(request: Request) {
     {
       name: `${payload.firstName.trim()} ${payload.lastName.trim()}`,
       email: payload.email.trim(),
+      phone: payload.phone?.trim() || null,
+      company: payload.company?.trim() || null,
       message: payload.message.trim(),
-      // Note: The current database schema only has: id, name, email, message, created_at
-      // Additional fields like phone, company, service are not stored in the current schema
-      // but are kept in the validation for potential future schema expansion
     },
   ]);
 

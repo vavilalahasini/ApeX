@@ -8,6 +8,8 @@ interface Submission {
   id: string;
   name: string;
   email: string;
+  phone?: string;
+  company?: string;
   message: string;
   created_at: string;
 }
@@ -34,6 +36,7 @@ export default function AdminDashboard({
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  console.log("Selected Submission:", selectedSubmission);
   const [error, setError] = useState('');
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -236,6 +239,12 @@ export default function AdminDashboard({
                         Email
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                        Phone Number
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                        Company Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                         Date
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
@@ -251,6 +260,12 @@ export default function AdminDashboard({
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-text-muted">{submission.email}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-text-muted">{submission.phone || "Not provided"}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-text-muted">{submission.company || "Not provided"}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-text-muted">{formatDate(submission.created_at)}</div>
@@ -319,6 +334,14 @@ export default function AdminDashboard({
               <div>
                 <label className="block text-sm font-medium text-text-muted mb-1">Email</label>
                 <p className="text-white">{selectedSubmission.email}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-text-muted mb-1">Phone Number</label>
+                <p className="text-white">{selectedSubmission.phone || "Not provided"}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-text-muted mb-1">Company / Brand</label>
+                <p className="text-white">{selectedSubmission.company || "Not provided"}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-text-muted mb-1">Message</label>

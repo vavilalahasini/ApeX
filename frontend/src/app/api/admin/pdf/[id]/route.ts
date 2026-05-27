@@ -52,6 +52,8 @@ export async function GET(request: Request) {
     const record = data as Record<string, unknown>;
     const name = (record.name as string) || 'Unknown';
     const email = (record.email as string) || '';
+    const phone = (record.phone as string) || 'Not provided';
+    const company = (record.company as string) || 'Not provided';
     const message = (record.message as string) || '';
     const project = (record.project as string) || '';
     const createdAt = record.created_at ? new Date(String(record.created_at)).toLocaleString('en-US') : '';
@@ -74,17 +76,25 @@ export async function GET(request: Request) {
     });
 
     // Subheader / meta
-    page.drawText(`Submission: ${name}`, { x: 56, y: height - 110, size: 11, font: helveticaBold, color: rgb(0,0,0) });
-    page.drawText(`Email: ${email}`, { x: 56, y: height - 128, size: 10, font: helvetica, color: rgb(0,0,0) });
-    page.drawText(`Submitted: ${createdAt}`, { x: 56, y: height - 144, size: 10, font: helvetica, color: rgb(0,0,0) });
+    let metaY = height - 110;
+    page.drawText(`Submission: ${name}`, { x: 56, y: metaY, size: 11, font: helveticaBold, color: rgb(0,0,0) });
+    metaY -= 18;
+    page.drawText(`Email: ${email}`, { x: 56, y: metaY, size: 10, font: helvetica, color: rgb(0,0,0) });
+    metaY -= 16;
+    page.drawText(`Phone: ${phone}`, { x: 56, y: metaY, size: 10, font: helvetica, color: rgb(0,0,0) });
+    metaY -= 16;
+    page.drawText(`Company: ${company}`, { x: 56, y: metaY, size: 10, font: helvetica, color: rgb(0,0,0) });
+    metaY -= 16;
+    page.drawText(`Submitted: ${createdAt}`, { x: 56, y: metaY, size: 10, font: helvetica, color: rgb(0,0,0) });
 
     // Project info if present
     if (project) {
-      page.drawText(`Project: ${project}`, { x: 56, y: height - 160, size: 10, font: helvetica, color: rgb(0,0,0) });
+      metaY -= 16;
+      page.drawText(`Project: ${project}`, { x: 56, y: metaY, size: 10, font: helvetica, color: rgb(0,0,0) });
     }
 
     // Message body
-    const bodyTop = height - 190;
+    const bodyTop = metaY - 30;
     const maxWidth = width - 112;
     const fontSize = 11;
     const lines = wrapText(message || '(No message provided)', helvetica, fontSize, maxWidth);
