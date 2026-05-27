@@ -41,6 +41,9 @@ export function baseMetadata(): Metadata {
     keywords: siteConfig.keywords,
     authors: [{ name: siteConfig.name }],
     creator: siteConfig.name,
+    verification: {
+      google: 'HPp8jhSlmoD8_5r2AbVNPwZLWJIABkiPfRUGJTpgsms',
+    },
     openGraph: {
       type: "website",
       locale: "en_US",
@@ -50,10 +53,10 @@ export function baseMetadata(): Metadata {
       description: siteConfig.description,
       images: [
         {
-          url: siteConfig.ogImage,
+          url: 'https://apex-studio-mu.vercel.app/og-image.png',
           width: 1200,
           height: 630,
-          alt: siteConfig.name,
+          alt: 'ApeX Studio — Premium Digital Experiences',
         },
       ],
     },
@@ -61,7 +64,7 @@ export function baseMetadata(): Metadata {
       card: "summary_large_image",
       title: siteConfig.title,
       description: siteConfig.description,
-      images: [siteConfig.ogImage],
+      images: ['https://apex-studio-mu.vercel.app/og-image.png'],
       creator: siteConfig.twitter,
     },
     robots: {

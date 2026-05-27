@@ -478,6 +478,10 @@ article {
   animation-play-state: paused;
 }
 
+.marquee-track.pause-animation:hover {
+  animation-play-state: paused;
+}
+
 /* Cursor-tracked holographic text glow */
 .glow-text {
   --pointer-x: 50%;

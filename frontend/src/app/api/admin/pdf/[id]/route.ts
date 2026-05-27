@@ -67,7 +67,7 @@ export async function GET(request: Request) {
 
     // Header
     page.drawRectangle({ x: 40, y: height - 96, width: width - 80, height: 56, color: rgb(0.06, 0.06, 0.06) });
-    page.drawText('APEX — PRECISION. PRESTIGE. PERFORMANCE.', {
+    page.drawText('ApeX — PRECISION. PRESTIGE. PERFORMANCE.', {
       x: 56,
       y: height - 74,
       size: 12,

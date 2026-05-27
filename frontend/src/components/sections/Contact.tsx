@@ -1,8 +1,10 @@
 "use client";
 
-
-import { FormEvent, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Script from "next/script";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
@@ -31,9 +33,33 @@ declare global {
 const inputClass =
   "w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-3 min-h-[44px] text-text-primary placeholder:text-[#555555] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#AAFF00]/40 focus:border-[#AAFF00]/40 transition-colors";
 
+const errorClass =
+  "text-xs text-[#ff9ed4] mt-1";
+
+const schema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Enter a valid email address"),
+  phone: z.string().min(1, "Phone number is required"),
+  company: z.string().min(1, "Company name is required"),
+  currentWebsite: z.string().url("Enter a valid URL").optional().or(z.literal("")),
+  service: z.string().min(1, "Please select a service"),
+  message: z.string().min(10, "Please describe your project (10+ characters)"),
+  website: z.string().optional(),
+});
+
+type FormData = z.infer<typeof schema>;
+
 export function Contact({ className }: { className?: string }) {
   const [formState, setFormState] = useState<ContactFormState>({ status: "idle" });
   const { data: contactData, loading: isLoadingContactData } = useContact();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting, isSubmitSuccessful },
+  } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   const captchaEnabled = process.env.NEXT_PUBLIC_CAPTCHA_ENABLED === "true";
   const captchaSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
@@ -67,27 +93,8 @@ export function Contact({ className }: { className?: string }) {
     });
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = async (data: FormData) => {
     setFormState({ status: "loading" });
-
-    const form = e.currentTarget;
-    const data = new FormData(form);
-
-    const firstName = data.get("firstName") as string;
-    const lastName = data.get("lastName") as string;
-    const email = data.get("email") as string;
-    const phone = data.get("phone") as string;
-    const company = data.get("company") as string;
-    const service = data.get("service") as string;
-    const message = data.get("message") as string;
-    const website = data.get("website") as string;
-
-    if (website?.trim()) {
-      setFormState({ status: "success" });
-      form.reset();
-      return;
-    }
 
     if (captchaEnabled && !captchaToken) {
       setFormState({ status: "error", message: "Please complete the CAPTCHA challenge before submitting." });
@@ -101,14 +108,7 @@ export function Contact({ className }: { className?: string }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          phone,
-          company,
-          service,
-          message,
-          website,
+          ...data,
           captchaToken: captchaToken ?? undefined,
         }),
       });
@@ -126,14 +126,13 @@ export function Contact({ className }: { className?: string }) {
       }
 
       setFormState({ status: "success" });
-      form.reset();
+      reset();
     } catch {
       setFormState({ status: "error", message: "Unable to connect to the backend. Please try again." });
     }
   };
 
-  const isSubmitting = formState.status === "loading";
-  const sent = formState.status === "success";
+  const sent = isSubmitSuccessful;
   const error = formState.status === "error" ? formState.message : null;
 
   return (
@@ -165,7 +164,7 @@ export function Contact({ className }: { className?: string }) {
 
       <Reveal className="max-w-2xl mx-auto">
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           aria-busy={isSubmitting}
           noValidate
         >
@@ -192,13 +191,15 @@ export function Contact({ className }: { className?: string }) {
               </label>
               <input
                 id="firstName"
-                name="firstName"
+                {...register("firstName")}
                 required
                 autoComplete="given-name"
                 disabled={isSubmitting || sent}
                 className={inputClass}
                 placeholder="Alex"
+                aria-invalid={errors.firstName ? "true" : "false"}
               />
+              {errors.firstName && <p className={errorClass} role="alert">{errors.firstName.message}</p>}
             </div>
             <div>
               <label
@@ -209,13 +210,15 @@ export function Contact({ className }: { className?: string }) {
               </label>
               <input
                 id="lastName"
-                name="lastName"
+                {...register("lastName")}
                 required
                 autoComplete="family-name"
                 disabled={isSubmitting || sent}
                 className={inputClass}
                 placeholder="Rivera"
+                aria-invalid={errors.lastName ? "true" : "false"}
               />
+              {errors.lastName && <p className={errorClass} role="alert">{errors.lastName.message}</p>}
             </div>
           </div>
 
@@ -229,14 +232,16 @@ export function Contact({ className }: { className?: string }) {
               </label>
               <input
                 id="email"
-                name="email"
+                {...register("email")}
                 type="email"
                 required
                 autoComplete="email"
                 disabled={isSubmitting || sent}
                 className={inputClass}
                 placeholder="hello@yourcompany.com"
+                aria-invalid={errors.email ? "true" : "false"}
               />
+              {errors.email && <p className={errorClass} role="alert">{errors.email.message}</p>}
             </div>
             <div>
               <label
@@ -247,14 +252,16 @@ export function Contact({ className }: { className?: string }) {
               </label>
               <input
                 id="phone"
-                name="phone"
+                {...register("phone")}
                 type="tel"
                 required
                 autoComplete="tel"
                 disabled={isSubmitting || sent}
                 className={inputClass}
                 placeholder="+91 98765 43210"
+                aria-invalid={errors.phone ? "true" : "false"}
               />
+              {errors.phone && <p className={errorClass} role="alert">{errors.phone.message}</p>}
             </div>
           </div>
 
@@ -268,39 +275,64 @@ export function Contact({ className }: { className?: string }) {
               </label>
               <input
                 id="company"
-                name="company"
+                {...register("company")}
                 required
                 autoComplete="organization"
                 disabled={isSubmitting || sent}
                 className={inputClass}
                 placeholder="Your Company"
+                aria-invalid={errors.company ? "true" : "false"}
               />
+              {errors.company && <p className={errorClass} role="alert">{errors.company.message}</p>}
             </div>
             <div>
               <label
-                htmlFor="service"
+                htmlFor="currentWebsite"
                 className="block text-xs uppercase tracking-[0.15em] text-text-muted mb-2"
               >
-                Service Required
+                Current website URL <span className="text-text-muted/60">(optional)</span>
               </label>
-              <select
-                id="service"
-                name="service"
-                required
+              <input
+                id="currentWebsite"
+                {...register("currentWebsite")}
+                type="url"
+                autoComplete="url"
                 disabled={isSubmitting || sent}
-                className={`${inputClass} appearance-none`}
-                defaultValue=""
-              >
-                <option value="" disabled className="bg-bg-elevated">
-                  Select a service
-                </option>
-                {contactData.services.map((s) => (
-                  <option key={s} value={s} className="bg-bg-elevated">
-                    {s}
-                  </option>
-                ))}
-              </select>
+                className={inputClass}
+                placeholder="https://yoursite.com"
+                aria-invalid={errors.currentWebsite ? "true" : "false"}
+              />
+              {errors.currentWebsite && <p className={errorClass} role="alert">{errors.currentWebsite.message}</p>}
+              <p className="text-xs text-text-muted/50 mt-1">Leave blank if you don&apos;t have one yet.</p>
             </div>
+          </div>
+
+          <div className="mb-5">
+            <label
+              htmlFor="service"
+              className="block text-xs uppercase tracking-[0.15em] text-text-muted mb-2"
+            >
+              Service Required
+            </label>
+            <select
+              id="service"
+              {...register("service")}
+              required
+              disabled={isSubmitting || sent}
+              className={`${inputClass} appearance-none`}
+              defaultValue=""
+              aria-invalid={errors.service ? "true" : "false"}
+            >
+              <option value="" disabled className="bg-bg-elevated">
+                Select a service
+              </option>
+              {contactData.services.map((s) => (
+                <option key={s} value={s} className="bg-bg-elevated">
+                  {s}
+                </option>
+              ))}
+            </select>
+            {errors.service && <p className={errorClass} role="alert">{errors.service.message}</p>}
           </div>
 
           <div className="mb-8">
@@ -312,13 +344,15 @@ export function Contact({ className }: { className?: string }) {
             </label>
             <textarea
               id="message"
-              name="message"
+              {...register("message")}
               required
               rows={5}
               disabled={isSubmitting || sent}
               className={`${inputClass} min-h-[120px] resize-none`}
               placeholder="Tell us about your project..."
+              aria-invalid={errors.message ? "true" : "false"}
             />
+            {errors.message && <p className={errorClass} role="alert">{errors.message.message}</p>}
           </div>
 
           {captchaEnabled && (
@@ -346,7 +380,7 @@ export function Contact({ className }: { className?: string }) {
             className="w-full"
             disabled={isSubmitting || sent || (captchaEnabled && !isCaptchaReady)}
           >
-            {isSubmitting ? "Opening Email Client..." : sent ? "Message Sent" : "Send Message →"}
+            {isSubmitting ? "Sending…" : sent ? "Message Sent" : "Send Message →"}
           </Button>
         </GlassPanel>
       </form>

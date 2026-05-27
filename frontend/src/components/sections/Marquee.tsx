@@ -30,7 +30,7 @@ export function Marquee({ className }: { className?: string }) {
       className={`relative marquee-section overflow-hidden border-y border-[rgba(0,245,255,0.08)] z-10 ${className || ''}`}
       aria-label="Capabilities"
     >
-      <div className="flex animate-marquee marquee-track whitespace-nowrap">
+      <div className="flex animate-marquee marquee-track whitespace-nowrap hover:pause-animation">
         {items.map((item, i) => (
           <span
             key={`${item}-${i}`}

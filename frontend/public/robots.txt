@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://apex-studio-mu.vercel.app/sitemap.xml
