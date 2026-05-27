@@ -25,6 +25,29 @@ function getResendConfig() {
   };
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+}
+
+function escapePayload(payload: ContactFormPayload): ContactFormPayload {
+  return {
+    firstName: escapeHtml(payload.firstName),
+    lastName: escapeHtml(payload.lastName),
+    email: escapeHtml(payload.email),
+    phone: payload.phone ? escapeHtml(payload.phone) : undefined,
+    company: payload.company ? escapeHtml(payload.company) : undefined,
+    service: escapeHtml(payload.service),
+    message: escapeHtml(payload.message),
+    website: payload.website ? escapeHtml(payload.website) : undefined,
+  };
+}
+
 function formatAdminHtml(payload: ContactFormPayload) {
   return `
     <div style="font-family:system-ui, sans-serif; line-height:1.6; color:#111;">
@@ -61,7 +84,8 @@ function formatUserHtml(payload: ContactFormPayload) {
   `;
 }
 
-export async function sendContactNotificationEmails(payload: ContactFormPayload) {
+export async function sendContactNotificationEmails(rawPayload: ContactFormPayload) {
+  const payload = escapePayload(rawPayload);
   const config = getResendConfig();
   const resend = new Resend(config.resendApiKey);
   const adminRecipients = config.contactToEmail.split(',').map((email) => email.trim()).filter(Boolean);

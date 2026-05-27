@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.NODE_ENV === "development"
-    ? "http://localhost:3000"
-    : "https://apex-studio-mu.vercel.app");
+const siteUrl = (() => {
+  const url = process.env.NEXT_PUBLIC_SITE_URL;
+  if (url) return url;
+  if (process.env.NODE_ENV === "development") {
+    return "http://localhost:3000";
+  }
+  throw new Error("CRITICAL_BUILD_ERROR: NEXT_PUBLIC_SITE_URL environment variable is required in production but was not found.");
+})();
 
 export function getSiteConfigData() {
   // Static fallback config for static site generation
@@ -15,8 +18,8 @@ export function getSiteConfigData() {
       "Build a stronger online presence with ApeX. Premium websites, AI product posters, and cinematic 3D web experiences for modern brands.",
     url: siteUrl,
     ogImage: `${siteUrl}/og-image.png`,
-    twitter: "",
-    email: "",
+    twitter: "@apex_studio",
+    email: "teamapex.contact@gmail.com",
     keywords: [
       "digital studio",
       "web design",

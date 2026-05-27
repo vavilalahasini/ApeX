@@ -1,16 +1,13 @@
-"use client";
-
 import type { CSSProperties } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { RevealGroup, RevealItem } from "@/components/ui/RevealGroup";
-import { usePortfolio } from "@/hooks/useContent";
-import type { PortfolioProject } from "@/types";
+import type { Portfolio as PortfolioType } from "@/lib/types";
 
 function ProjectCard({
   project,
   index,
 }: {
-  project: PortfolioProject;
+  project: any;
   index: number;
 }) {
   const spans =
@@ -62,9 +59,14 @@ function ProjectCard({
         <p className="text-xs uppercase tracking-[0.2em] text-text-muted mb-2">
           {project.category}
         </p>
-        <h3 className="font-[family-name:var(--font-syne)] text-2xl md:text-4xl font-bold tracking-tight text-text-primary">
+        <h3 className="font-[family-name:var(--font-syne)] text-2xl md:text-4xl font-bold tracking-tight text-text-primary mb-1">
           {project.title}
         </h3>
+        {project.description && (
+          <p className="text-xs text-text-muted max-w-md line-clamp-2">
+            {project.description}
+          </p>
+        )}
       </div>
 
       <div
@@ -78,27 +80,7 @@ function ProjectCard({
   );
 }
 
-export function Portfolio({ className }: { className?: string }) {
-  const { data: portfolioData, loading } = usePortfolio();
-
-  if (loading) {
-    return (
-      <section id="work" className={`relative section-padding z-10 ${className || ''}`} aria-labelledby="work-heading">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-800 rounded w-1/4" />
-          <div className="h-12 bg-gray-800 rounded w-1/2" />
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-64 bg-gray-800 rounded" />
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (!portfolioData) return null;
-
+export function Portfolio({ portfolioData, className }: { portfolioData: PortfolioType; className?: string }) {
   return (
     <section id="work" className={`relative section-padding z-10 ${className || ''}`} aria-labelledby="work-heading">
       <SectionHeading

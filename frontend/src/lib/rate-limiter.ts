@@ -68,60 +68,84 @@ async function cleanupOldRateLimits(): Promise<void> {
 /**
  * Check if a request should be rate limited
  */
+// Conservative in-memory rate limiter fallback when DB is down or unconfigured
+const fallbackCache = new Map<string, { count: number; windowStart: number }>();
+
+function checkInMemoryFallback(key: string, maxRequests: number, windowMs: number): RateLimitResult {
+  const now = Date.now();
+  const record = fallbackCache.get(key);
+  
+  if (!record || (now - record.windowStart > windowMs)) {
+    fallbackCache.set(key, { count: 1, windowStart: now });
+    return {
+      allowed: true,
+      limit: maxRequests,
+      remaining: maxRequests - 1,
+      resetTime: new Date(now + windowMs),
+    };
+  }
+  
+  if (record.count >= maxRequests) {
+    return {
+      allowed: false,
+      limit: maxRequests,
+      remaining: 0,
+      resetTime: new Date(record.windowStart + windowMs),
+      error: "Rate limit exceeded (fallback)",
+    };
+  }
+  
+  record.count += 1;
+  return {
+    allowed: true,
+    limit: maxRequests,
+    remaining: maxRequests - record.count,
+    resetTime: new Date(record.windowStart + windowMs),
+  };
+}
+
+/**
+ * Check if a request should be rate limited
+ */
 export async function checkRateLimit(
   request: Request,
-  config: Partial<RateLimitConfig> = {}
+  config: Partial<RateLimitConfig> = {},
+  customKey?: string
 ): Promise<RateLimitResult> {
   const finalConfig = { ...DEFAULT_CONFIG, ...config };
   const clientIp = getClientIp(request);
+  const lookupKey = customKey || clientIp;
   
   if (!supabaseAdmin) {
-    // If Supabase is not configured, allow the request but log a warning
-    console.warn("Supabase not configured for rate limiting, allowing request");
-    return {
-      allowed: true,
-      limit: finalConfig.maxRequests,
-      remaining: finalConfig.maxRequests,
-      resetTime: new Date(Date.now() + finalConfig.windowMs),
-    };
+    console.warn("CRITICAL_ALERT: Supabase not configured for rate limiting. Falling back to conservative in-memory rate limiter.");
+    return checkInMemoryFallback(lookupKey, finalConfig.maxRequests, finalConfig.windowMs);
   }
 
   try {
-    // Periodically clean up old records (10% chance to avoid excessive cleanup calls)
-    if (Math.random() < 0.1) {
-      await cleanupOldRateLimits();
-    }
-
     const now = new Date();
     const windowStart = new Date(Date.now() - finalConfig.windowMs);
 
-    // Check existing rate limit record for this IP
+    // Check existing rate limit record for this key (IP or custom key)
     const { data: existingRecord, error: fetchError } = await supabaseAdmin
       .from("rate_limits")
       .select("*")
-      .eq("ip_address", clientIp)
+      .eq("ip_address", lookupKey)
       .gte("window_start", windowStart.toISOString())
       .order("window_start", { ascending: false })
       .limit(1)
       .single();
 
     if (fetchError && fetchError.code !== "PGRST116") {
-      // PGRST116 is "not found", which is expected
-      console.error("Rate limit check failed:", fetchError);
-      return {
-        allowed: true, // Fail open on database errors
-        limit: finalConfig.maxRequests,
-        remaining: finalConfig.maxRequests,
-        resetTime: new Date(Date.now() + finalConfig.windowMs),
-        error: "Rate limit check failed",
-      };
+      console.error("RATE_LIMIT_DB_FAILURE: Rate limit database check failed:", fetchError);
+      console.warn("Falling back to conservative in-memory rate limiter.");
+      return checkInMemoryFallback(lookupKey, finalConfig.maxRequests, finalConfig.windowMs);
     }
 
     if (!existingRecord) {
       // No existing record, create a new one
       const { error: insertError } = await supabaseAdmin.from("rate_limits").insert([
         {
-          ip_address: clientIp,
+          ip_address: lookupKey,
           request_count: 1,
           window_start: now.toISOString(),
           last_request: now.toISOString(),
@@ -197,15 +221,9 @@ export async function checkRateLimit(
       resetTime: new Date(recordWindowStart.getTime() + finalConfig.windowMs),
     };
   } catch (error) {
-    console.error("Rate limiting error:", error);
-    // Fail open on unexpected errors
-    return {
-      allowed: true,
-      limit: finalConfig.maxRequests,
-      remaining: finalConfig.maxRequests,
-      resetTime: new Date(Date.now() + finalConfig.windowMs),
-      error: "Rate limiting error",
-    };
+    console.error("RATE_LIMIT_UNEXPECTED_ERROR: Rate limiting error occurred:", error);
+    console.warn("Falling back to conservative in-memory rate limiter.");
+    return checkInMemoryFallback(lookupKey, finalConfig.maxRequests, finalConfig.windowMs);
   }
 }
 
@@ -214,9 +232,10 @@ export async function checkRateLimit(
  */
 export async function rateLimitMiddleware(
   request: Request,
-  config?: Partial<RateLimitConfig>
+  config?: Partial<RateLimitConfig>,
+  customKey?: string
 ): Promise<{ allowed: boolean; response?: Response }> {
-  const result = await checkRateLimit(request, config);
+  const result = await checkRateLimit(request, config, customKey);
 
   if (!result.allowed) {
     const response = new Response(

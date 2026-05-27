@@ -43,6 +43,11 @@ export default function RootLayout({
     <html lang="en" className={`${syne.variable} ${dmSans.variable} ${instrumentSerif.variable}`}>
       <head>
         <script
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.classList.add('js-enabled');`
+          }}
+        />
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(orgLd),

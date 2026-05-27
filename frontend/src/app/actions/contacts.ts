@@ -2,6 +2,14 @@
 
 import { supabaseAdmin } from '@/lib/supabase-server';
 import type { ContactRequest } from '@/types';
+import { isAdmin } from '@/lib/auth';
+
+async function requireAdmin() {
+  const admin = await isAdmin();
+  if (!admin) {
+    throw new Error('Unauthorized: Admin access required.');
+  }
+}
 
 export interface PaginatedSubmissionsResult {
   submissions: ContactRequest[];
@@ -14,6 +22,7 @@ export async function getContactSubmissions(
   cursor: string | null = null
 ): Promise<{ success: boolean; data?: PaginatedSubmissionsResult; error?: string }> {
   try {
+    await requireAdmin();
     const client = supabaseAdmin;
     if (!client) throw new Error('Supabase admin client not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment.');
 
@@ -57,6 +66,7 @@ export async function getContactSubmissions(
 // Legacy function for backward compatibility (fetches all records)
 export async function getAllContactSubmissions() {
   try {
+    await requireAdmin();
     const client = supabaseAdmin;
     if (!client) throw new Error('Supabase admin client not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment.');
 
@@ -76,6 +86,7 @@ export async function getAllContactSubmissions() {
 
 export async function deleteContactSubmission(id: string) {
   try {
+    await requireAdmin();
     const client = supabaseAdmin;
     if (!client) throw new Error('Supabase admin client not configured.');
 
@@ -95,6 +106,7 @@ export async function deleteContactSubmission(id: string) {
 
 export async function loadMoreSubmissions(cursor: string | null, limit: number = 20) {
   try {
+    await requireAdmin();
     const result = await getContactSubmissions(limit, cursor);
     return result;
   } catch (error: unknown) {
@@ -106,6 +118,7 @@ export async function loadMoreSubmissions(cursor: string | null, limit: number =
 
 export async function getAdminDashboardData(limit: number = 20) {
   try {
+    await requireAdmin();
     const client = supabaseAdmin;
     if (!client) throw new Error('Supabase admin client not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment.');
 
@@ -175,6 +188,7 @@ export async function getAdminDashboardData(limit: number = 20) {
 
 export async function getContactStats() {
   try {
+    await requireAdmin();
     const client = supabaseAdmin;
     if (!client) throw new Error('Supabase admin client not configured.');
 

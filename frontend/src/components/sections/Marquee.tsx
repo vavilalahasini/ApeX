@@ -1,48 +1,19 @@
-"use client";
+import type { Marquee as MarqueeType } from "@/lib/types";
 
-import { GlowText } from "@/components/ui/GlowText";
-import { useMarquee } from "@/hooks/useContent";
-
-export function Marquee({ className }: { className?: string }) {
-  const { data: marqueeData, loading } = useMarquee();
-
-  if (loading) {
-    return (
-      <section
-        className={`relative marquee-section overflow-hidden border-y border-[rgba(0,245,255,0.08)] z-10 ${className || ''}`}
-        aria-label="Capabilities"
-      >
-        <div className="animate-pulse space-x-8 flex whitespace-nowrap">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-10 bg-gray-800 rounded w-32" />
-          ))}
-        </div>
-      </section>
-    );
-  }
-
-  if (!marqueeData) return null;
-
-  const items = [...marqueeData.items, ...marqueeData.items];
+export function Marquee({ marqueeData, className }: { marqueeData: MarqueeType; className?: string }) {
+  // Duplicate items to ensure smooth infinite loop
+  const repeatedItems = [...marqueeData.items, ...marqueeData.items, ...marqueeData.items, ...marqueeData.items];
 
   return (
-    <section
-      className={`relative marquee-section overflow-hidden border-y border-[rgba(0,245,255,0.08)] z-10 ${className || ''}`}
-      aria-label="Capabilities"
-    >
-      <div className="flex animate-marquee marquee-track whitespace-nowrap">
-        {items.map((item, i) => (
-          <span
-            key={`${item}-${i}`}
-            className="marquee-item mx-8 md:mx-12"
-          >
-            <GlowText className="text-2xl md:text-4xl font-[family-name:var(--font-syne)] font-bold tracking-tight">
+    <section className={`marquee-section bg-bg-deep border-y border-white/5 overflow-hidden select-none z-10 ${className || ''}`} aria-hidden="true">
+      <div className="marquee-track animate-marquee whitespace-nowrap">
+        {repeatedItems.map((item, i) => (
+          <div key={i} className="marquee-item inline-flex items-center">
+            <span className="font-[family-name:var(--font-syne)] text-[clamp(1.5rem,4vw,3.5rem)] font-bold uppercase tracking-wider text-white/20 mx-8">
               {item}
-            </GlowText>
-            <span className="marquee-separator mx-8 md:mx-12 text-accent/40 text-lg" aria-hidden>
-              ◆
             </span>
-          </span>
+            <span className="marquee-separator text-white/5 text-xl font-bold">•</span>
+          </div>
         ))}
       </div>
     </section>

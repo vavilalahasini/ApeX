@@ -5,48 +5,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { UnderlineLink } from "@/components/ui/UnderlineLink";
 import { useActiveSection } from "@/hooks/useActiveSection";
-import { useNavigation } from "@/hooks/useContent";
+import type { Navigation } from "@/lib/types";
 
-export function FloatingGlassNavbar() {
+export function FloatingGlassNavbar({ navData }: { navData: Navigation }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { data: navData, loading } = useNavigation();
-  const sectionIds = navData?.links.map(link => link.href.replace('#', '')) || [];
+  const sectionIds = navData.links.map(link => link.href.replace('#', ''));
   const activeSection = useActiveSection(sectionIds);
 
   const linkHrefToId = (href: string) => href.replace("#", "");
-
-  if (loading) {
-    return (
-      <m.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex items-center justify-between gap-8 px-8 py-3.5 rounded-full"
-        style={{
-          backgroundColor: "rgba(0, 0, 0, 0.25)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
-          border: "1px solid rgba(255, 255, 255, 0.25)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
-        }}
-        aria-label="Main navigation"
-      >
-        <m.a
-          href="#main-content"
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
-          <span className="font-[family-name:var(--font-syne)] text-lg font-bold tracking-tight gradient-text">
-            ApeX
-          </span>
-        </m.a>
-        <div className="animate-pulse h-8 w-32 bg-gray-800 rounded" />
-      </m.nav>
-    );
-  }
-
-  if (!navData) return null;
 
   return (
     <>
