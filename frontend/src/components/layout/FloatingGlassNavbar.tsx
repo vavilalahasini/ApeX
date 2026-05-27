@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { UnderlineLink } from "@/components/ui/UnderlineLink";
@@ -17,7 +17,7 @@ export function FloatingGlassNavbar() {
 
   if (loading) {
     return (
-      <motion.nav
+      <m.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
@@ -31,7 +31,7 @@ export function FloatingGlassNavbar() {
         }}
         aria-label="Main navigation"
       >
-        <motion.a
+        <m.a
           href="#main-content"
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
@@ -40,9 +40,9 @@ export function FloatingGlassNavbar() {
           <span className="font-[family-name:var(--font-syne)] text-lg font-bold tracking-tight gradient-text">
             ApeX
           </span>
-        </motion.a>
+        </m.a>
         <div className="animate-pulse h-8 w-32 bg-gray-800 rounded" />
-      </motion.nav>
+      </m.nav>
     );
   }
 
@@ -50,7 +50,7 @@ export function FloatingGlassNavbar() {
 
   return (
     <>
-      <motion.nav
+      <m.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
@@ -65,7 +65,7 @@ export function FloatingGlassNavbar() {
         aria-label="Main navigation"
       >
         {/* Logo Section */}
-        <motion.a
+        <m.a
           href="#main-content"
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
@@ -74,7 +74,7 @@ export function FloatingGlassNavbar() {
           <span className="font-[family-name:var(--font-syne)] text-lg font-bold tracking-tight gradient-text">
             ApeX
           </span>
-        </motion.a>
+        </m.a>
 
         {/* Desktop Navigation Links */}
         <ul className="hidden md:flex items-center gap-8">
@@ -123,11 +123,11 @@ export function FloatingGlassNavbar() {
             className={`block w-5 h-px bg-text-primary transition-transform ${mobileOpen ? "-rotate-45 -translate-y-1.5" : ""}`}
           />
         </button>
-      </motion.nav>
+      </m.nav>
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <motion.div
+        <m.div
           id="mobile-menu"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -164,7 +164,7 @@ export function FloatingGlassNavbar() {
               </Button>
             </li>
           </ul>
-        </motion.div>
+        </m.div>
       )}
     </>
   );

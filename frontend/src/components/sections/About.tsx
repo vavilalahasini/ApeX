@@ -68,7 +68,7 @@ export function About({ className }: { className?: string }) {
             <RevealGroup className="grid grid-cols-2 gap-4">
               {aboutData.content.stats.map((stat, i) => (
                 <RevealItem key={stat.label} index={i}>
-                  <Card className="stat-card-ro rounded-xl p-5 md:p-6 transition-all duration-300">
+                  <Card className="stat-card-ro rounded-xl p-5 md:p-6 transition-shadow duration-200">
                     <p className="font-[family-name:var(--font-syne)] text-2xl md:text-3xl font-bold accent-ro-gradient mb-1">
                       {stat.value}
                     </p>

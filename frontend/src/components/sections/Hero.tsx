@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { FloatingOrbs } from "@/components/effects/FloatingOrbs";
 import { Button } from "@/components/ui/Button";
 import { GradientText } from "@/components/ui/GradientText";
@@ -44,7 +44,7 @@ export function Hero({ className }: { className?: string }) {
       <div className="absolute inset-0 perspective-grid opacity-40 pointer-events-none" aria-hidden />
 
       <div className="relative z-10">
-        <motion.p
+        <m.p
           variants={fadeUp}
           initial="hidden"
           animate="visible"
@@ -52,9 +52,9 @@ export function Hero({ className }: { className?: string }) {
           className="mt-[2vh] text-xs md:text-sm uppercase tracking-[0.4em] text-text-muted mb-6 md:mb-8 break-words whitespace-normal"
         >
           {heroData.tagline}
-        </motion.p>
+        </m.p>
 
-        <motion.h1
+        <m.h1
           id="hero-heading"
           variants={fadeUp}
           initial="hidden"
@@ -71,9 +71,9 @@ export function Hero({ className }: { className?: string }) {
               )}
             </span>
           ))}
-        </motion.h1>
+        </m.h1>
 
-        <motion.p
+        <m.p
           variants={fadeUp}
           initial="hidden"
           animate="visible"
@@ -81,9 +81,9 @@ export function Hero({ className }: { className?: string }) {
           className="text-base md:text-xl text-text-muted max-w-2xl leading-relaxed mb-10 md:mb-12 break-words whitespace-normal"
         >
           {heroData.description}
-        </motion.p>
+        </m.p>
 
-        <motion.div
+        <m.div
           variants={fadeUp}
           initial="hidden"
           animate="visible"
@@ -99,7 +99,7 @@ export function Hero({ className }: { className?: string }) {
               {button.text}
             </Button>
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

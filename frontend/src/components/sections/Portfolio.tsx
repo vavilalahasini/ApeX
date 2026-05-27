@@ -24,7 +24,7 @@ function ProjectCard({
     <RevealItem
       as="article"
       index={index}
-      className={`group relative rounded-2xl overflow-hidden border border-[rgba(255,255,255,0.08)] bg-bg-elevated hover:border-[rgba(255,255,255,0.18)] transition-colors duration-500 ${spans}`}
+      className={`group relative rounded-2xl overflow-hidden border border-[rgba(255,255,255,0.08)] bg-bg-elevated hover:border-[rgba(255,255,255,0.18)] transition-colors duration-200 ${spans}`}
     >
       <a
         href={project.href}
@@ -50,11 +50,11 @@ function ProjectCard({
         aria-hidden
       />
 
-      <div className="absolute inset-0 bg-bg-deep/40 group-hover:bg-bg-deep/20 transition-colors duration-500" aria-hidden />
+      <div className="absolute inset-0 bg-bg-deep/40 group-hover:bg-bg-deep/20 transition-colors duration-200" aria-hidden />
 
       <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-10 z-10 pointer-events-none">
         <span
-          className="portfolio-cta-yg inline-flex items-center gap-2 text-sm mb-3 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500"
+          className="portfolio-cta-yg inline-flex items-center gap-2 text-sm mb-3 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-[opacity,transform] duration-200"
         >
           View Case Study
           <span aria-hidden>→</span>
@@ -68,7 +68,7 @@ function ProjectCard({
       </div>
 
       <div
-        className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out group-hover:scale-105"
+        className="absolute inset-0 pointer-events-none transition-transform duration-300 ease-out group-hover:scale-105"
         style={{
           background: `radial-gradient(circle at 30% 70%, color-mix(in srgb, ${project.accent} 13%, transparent) 0%, transparent 50%)`,
         }}

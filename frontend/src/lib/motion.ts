@@ -1,16 +1,14 @@
-/** Page-load animations (Hero). Scroll reveals use `@/components/ui/Reveal`. */
 import type { Variants } from "framer-motion";
-import { EASE } from "./constants";
 
 export const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 24 },
   visible: (i: number = 0) => ({
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.9,
-      delay: i * 0.12,
-      ease: EASE,
+      duration: 0.4,
+      delay: i * 0.05,
+      ease: [0.16, 1, 0.3, 1],
     },
   }),
 };

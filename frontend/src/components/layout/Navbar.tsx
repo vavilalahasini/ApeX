@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { m, useScroll, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { UnderlineLink } from "@/components/ui/UnderlineLink";
@@ -20,11 +20,11 @@ export function Navbar() {
   const linkHrefToId = (href: string) => href.replace("#", "");
 
   return (
-    <motion.header
+    <m.header
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
+      transition={{ duration: 0.4, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+      className={`fixed top-0 left-0 right-0 z-[100] transition-[background-color,border-color,backdrop-filter] duration-200 ${
         scrolled
           ? "bg-[rgba(8,8,8,0.88)] backdrop-blur-xl border-b border-[rgba(255,255,255,0.08)]"
           : "bg-transparent"
@@ -88,7 +88,7 @@ export function Navbar() {
       </nav>
 
       {mobileOpen && (
-        <motion.div
+        <m.div
           id="mobile-menu"
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
@@ -117,8 +117,8 @@ export function Navbar() {
               </Button>
             </li>
           </ul>
-        </motion.div>
+        </m.div>
       )}
-    </motion.header>
+    </m.header>
   );
 }

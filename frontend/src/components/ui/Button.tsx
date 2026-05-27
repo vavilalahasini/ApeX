@@ -34,7 +34,7 @@ type ButtonAsLink = CommonProps & {
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const base =
-  "inline-flex items-center justify-center rounded-full uppercase tracking-[0.12em] font-semibold transition-transform duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent min-h-[44px] min-w-[44px] disabled:opacity-60 disabled:pointer-events-none";
+  "inline-flex items-center justify-center rounded-full uppercase tracking-[0.12em] font-semibold transition-[background-color,border-color,box-shadow,transform] duration-[120ms] ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent min-h-[44px] min-w-[44px] disabled:opacity-60 disabled:pointer-events-none";
 
 export function Button({
   variant = "gradient",
