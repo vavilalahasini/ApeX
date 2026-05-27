@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Syne } from "next/font/google";
+import { DM_Sans, Syne, Instrument_Serif } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
 import { SkipToContent } from "@/components/layout/SkipToContent";
 import {
@@ -21,6 +21,14 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["italic"],
+  variable: "--font-instrument-serif",
+  display: "swap",
+});
+
 export const metadata: Metadata = baseMetadata();
 
 export default function RootLayout({
@@ -32,7 +40,7 @@ export default function RootLayout({
   const siteLd = websiteJsonLd();
 
   return (
-    <html lang="en" className={`${syne.variable} ${dmSans.variable}`}>
+    <html lang="en" className={`${syne.variable} ${dmSans.variable} ${instrumentSerif.variable}`}>
       <head>
         <script
           type="application/ld+json"

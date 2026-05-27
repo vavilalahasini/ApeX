@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://localhost:3000";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://apex-studio-mu.vercel.app";
 
 export function getSiteConfigData() {
   // Static fallback config for static site generation
@@ -30,6 +30,9 @@ export function baseMetadata(): Metadata {
   
   return {
     metadataBase: new URL(siteConfig.url),
+    alternates: {
+      canonical: siteConfig.url,
+    },
     title: {
       default: siteConfig.title,
       template: `%s | ${siteConfig.name}`,

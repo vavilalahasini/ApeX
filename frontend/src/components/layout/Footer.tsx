@@ -4,9 +4,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchContent, type Contact, type SiteConfig } from "@/lib/client-data";
 
+import contactDataJson from "../../../data/contact.json";
+import siteConfigDataJson from "../../../data/site-config.json";
+
 export function Footer() {
-  const [contactData, setContactData] = useState<Contact | null>(null);
-  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null);
+  const [contactData, setContactData] = useState<Contact | null>(contactDataJson as unknown as Contact);
+  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(siteConfigDataJson as unknown as SiteConfig);
   const year = new Date().getFullYear();
 
   useEffect(() => {
