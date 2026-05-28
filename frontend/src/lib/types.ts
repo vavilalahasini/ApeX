@@ -51,20 +51,34 @@ export interface About {
   };
 }
 
+export interface CaseStudyDetails {
+  description: string;
+  challenges: string[];
+  solutions: string[];
+  results: string[];
+  technologies: string[];
+  liveUrl?: string;
+  caseStudyUrl?: string;
+  images?: string[];
+}
+
+export interface PortfolioProject {
+  title: string;
+  category: string;
+  gradient: string;
+  accent: string;
+  href: string;
+  slug: string;
+  caseStudy?: CaseStudyDetails;
+}
+
 export interface Portfolio {
   section: {
     label: string;
     title: string;
     subtitle: string;
   };
-  projects: Array<{
-    title: string;
-    category: string;
-    gradient: string;
-    accent: string;
-    href: string;
-    slug: string;
-  }>;
+  projects: PortfolioProject[];
 }
 
 export interface Testimonials {

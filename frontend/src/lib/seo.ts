@@ -11,7 +11,7 @@ export function getSiteConfigData() {
     description:
       "Build a stronger online presence with ApeX. Premium websites, AI product posters, and cinematic 3D web experiences for modern brands.",
     url: siteUrl,
-    ogImage: `${siteUrl}/og-image.png`,
+    ogImage: `${siteUrl}/og-image.svg`,
     twitter: "",
     email: "",
     keywords: [
@@ -21,6 +21,11 @@ export function getSiteConfigData() {
       "AI posters",
       "brand identity",
       "agency",
+      "cinematic web design",
+      "AI product posters",
+      "3D web experiences",
+      "premium website development",
+      "Hyderabad digital agency",
     ],
   };
 }
@@ -53,7 +58,7 @@ export function baseMetadata(): Metadata {
       description: siteConfig.description,
       images: [
         {
-          url: 'https://apex-studio-mu.vercel.app/og-image.png',
+          url: 'https://apex-studio-mu.vercel.app/og-image.svg',
           width: 1200,
           height: 630,
           alt: 'ApeX Studio — Premium Digital Experiences',
@@ -64,7 +69,7 @@ export function baseMetadata(): Metadata {
       card: "summary_large_image",
       title: siteConfig.title,
       description: siteConfig.description,
-      images: ['https://apex-studio-mu.vercel.app/og-image.png'],
+      images: ['https://apex-studio-mu.vercel.app/og-image.svg'],
       creator: siteConfig.twitter,
     },
     robots: {
@@ -202,6 +207,44 @@ export function breadcrumbSchema(items: Array<{ name: string; item: string }>) {
       position: index + 1,
       name: item.name,
       item: item.item,
+    })),
+  };
+}
+
+export interface PortfolioItem {
+  name: string;
+  description: string;
+  url?: string;
+  image?: string;
+  category?: string;
+  datePublished?: string;
+}
+
+export function portfolioJsonLd(items: PortfolioItem[]) {
+  const siteConfig = getSiteConfigData();
+  
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `${siteConfig.name} Portfolio`,
+    description: "A collection of our featured projects and work",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "CreativeWork",
+        name: item.name,
+        description: item.description,
+        url: item.url ? `${siteConfig.url}${item.url}` : siteConfig.url,
+        image: item.image ? `${siteConfig.url}${item.image}` : siteConfig.ogImage,
+        genre: item.category,
+        datePublished: item.datePublished,
+        creator: {
+          "@type": "Organization",
+          name: siteConfig.name,
+          url: siteConfig.url,
+        },
+      },
     })),
   };
 }

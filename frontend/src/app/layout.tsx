@@ -5,7 +5,9 @@ import { SkipToContent } from "@/components/layout/SkipToContent";
 import {
   organizationJsonLd,
   websiteJsonLd,
+  portfolioJsonLd,
 } from "@/lib/seo";
+import portfolioData from "@/data/portfolio.json";
 import "./globals.css";
 
 const syne = Syne({
@@ -29,6 +31,29 @@ const instrumentSerif = Instrument_Serif({
   display: "swap",
 });
 
+export const metadata = {
+  title: "ApeX - Innovative Digital Solutions",
+  description: "Transform your business with cutting-edge digital solutions. We deliver exceptional web development, design, and technology services to help you succeed in the digital age.",
+  openGraph: {
+    title: "ApeX - Innovative Digital Solutions",
+    description: "Transform your business with cutting-edge digital solutions. We deliver exceptional web development, design, and technology services to help you succeed in the digital age.",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "ApeX - Innovative Digital Solutions",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ApeX - Innovative Digital Solutions",
+    description: "Transform your business with cutting-edge digital solutions. We deliver exceptional web development, design, and technology services to help you succeed in the digital age.",
+    images: ["/og-image.svg"],
+  },
+};
 
 export default async function RootLayout({
   children,
@@ -39,6 +64,15 @@ export default async function RootLayout({
   const nonce = headersList.get('x-nonce') || '';
   const orgLd = organizationJsonLd();
   const siteLd = websiteJsonLd();
+
+  // Transform portfolio data for schema
+  const portfolioItems = portfolioData.projects.map((project: any) => ({
+    name: project.title,
+    description: `${project.category} project - ${project.href}`,
+    url: project.href,
+    category: project.category,
+  }));
+  const portfolioLd = portfolioJsonLd(portfolioItems);
 
   return (
     <html lang="en" className={`${syne.variable} ${dmSans.variable} ${instrumentSerif.variable}`}>
@@ -55,6 +89,13 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(siteLd),
+          }}
+        />
+        <script
+          nonce={nonce}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(portfolioLd),
           }}
         />
       </head>

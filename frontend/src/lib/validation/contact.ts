@@ -7,8 +7,15 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Matches E.164 format and common variations
 const PHONE_RE = /^[\d\s\-().+]{7,20}$/;
 
-// Patterns to block in message (XSS, spam vectors)
-const SUSPICIOUS_PATTERNS = [/http/i, /www\./i, /\.com/i, /href/i, /<a /i, /<script/i];
+// Enhanced patterns to block in message (XSS, spam vectors, injection attacks)
+const SUSPICIOUS_PATTERNS = [
+  /http/i, /www\./i, /\.com/i, /href/i, /<a /i, /<script/i,
+  /javascript:/i, /onerror=/i, /onload=/i, /onclick=/i,
+  /<iframe/i, /<object/i, /<embed/i, /eval\(/i, /document\./i,
+  /window\./i, /alert\(/i, /prompt\(/i, /confirm\(/i,
+  /<svg/i, /onfocus=/i, /onblur=/i, /onmouseover=/i,
+  /\$\{.*\}/i, /@import/i, /expression\(/i,
+];
 
 /**
  * Enhanced contact form schema with strict validation

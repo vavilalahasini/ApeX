@@ -50,6 +50,36 @@ export async function POST(request: Request) {
     );
   }
 
+  // Validate request size (prevent large payload attacks)
+  const contentLength = request.headers.get("content-length");
+  if (contentLength && parseInt(contentLength) > 10000) {
+    return NextResponse.json(
+      { error: "Request payload too large." },
+      { status: 413 }
+    );
+  }
+
+  // Validate Content-Type
+  const contentType = request.headers.get("content-type");
+  if (!contentType?.includes("application/json")) {
+    return NextResponse.json(
+      { error: "Invalid content type. Expected application/json." },
+      { status: 415 }
+    );
+  }
+
+  // Validate referrer (prevent CSRF)
+  const referer = request.headers.get("referer");
+  const origin = request.headers.get("origin");
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://apex-studio-mu.vercel.app";
+  
+  if (referer && origin && !referer.startsWith(siteUrl) && !origin.startsWith(siteUrl.replace(/^https?:\/\//, ""))) {
+    return NextResponse.json(
+      { error: "Invalid request origin." },
+      { status: 403 }
+    );
+  }
+
   const body = await request.json();
 
   const parsed = contactFormSchema.safeParse(body);
@@ -115,5 +145,19 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ success: true }, { status: 201 });
+  // Log successful submission for security monitoring
+  console.log(`Contact form submitted successfully from IP: ${ip}, Email: ${payload.email}`);
+
+  return NextResponse.json(
+    { success: true },
+    {
+      status: 201,
+      headers: {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "X-XSS-Protection": "1; mode=block",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+      },
+    }
+  );
 }

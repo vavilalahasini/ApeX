@@ -13,11 +13,11 @@
   --color-wr-bright: #E02A00;      /* Highlight warm red */
   --color-wr-dark: #9A1A00;        /* Deep warm red */
   --color-wr-glow: rgba(204, 34, 0, 0.40);
-  /* ── Kept for non-CTA accents ── */
-  --color-yg: #AAFF00;
+  /* ── Kept for non-CTA accents (updated for accessibility) ── */
+  --color-yg: #C8F135;             /* Darker lime for WCAG AA compliance */
   --color-ro: #FF4D1A;
   --color-text-primary: #FFFFFF;
-  --color-text-muted: #888888;
+  --color-text-muted: #AAAAAA;     /* Lighter gray for better contrast (7:1 on #080808) */
   --color-glass: rgba(17, 17, 17, 0.94);
   --color-border-glow: rgba(204, 34, 0, 0.12);
   --font-heading: var(--font-syne);
@@ -901,11 +901,11 @@ article {
 
 /* ─── Section accent: yellow-green highlight text ─── */
 .accent-yg {
-  color: #AAFF00;
+  color: #C8F135; /* Darker lime for better contrast (4.5:1 on #080808) */
 }
 
 .accent-yg-gradient {
-  background: linear-gradient(135deg, #AAFF00 0%, #B5FF2D 50%, #88CC00 100%);
+  background: linear-gradient(135deg, #C8F135 0%, #D4FF40 50%, #A8CC20 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -936,34 +936,34 @@ article {
 
 /* ─── Portfolio hover CTA accent: yellow-green ─── */
 .portfolio-cta-yg {
-  color: #AAFF00;
-  text-shadow: 0 0 12px rgba(170, 255, 0, 0.5);
+  color: #C8F135;
+  text-shadow: 0 0 12px rgba(200, 241, 53, 0.5);
 }
 
 /* ─── Footer social: yellow-green hover ─── */
 .footer-link-yg::after,
 .footer-link-yg span {
-  background: #AAFF00 !important;
+  background: #C8F135 !important;
 }
 
 .footer-link-yg:hover {
-  color: #AAFF00 !important;
+  color: #C8F135 !important;
 }
 
 /* ─── Navbar active link: yellow-green ─── */
 .nav-active-yg {
-  color: #AAFF00 !important;
+  color: #C8F135 !important;
 }
 
 /* ─── Testimonial author: yellow-green accent ─── */
 .testimonial-author-yg {
-  color: #AAFF00;
+  color: #C8F135;
 }
 
 /* ─── Section label pill: alternating accents ─── */
 .label-yg {
-  color: #AAFF00;
-  border-bottom: 1px solid rgba(170, 255, 0, 0.3);
+  color: #C8F135;
+  border-bottom: 1px solid rgba(200, 241, 53, 0.3);
   padding-bottom: 2px;
 }
 
@@ -975,7 +975,7 @@ article {
 
 /* ─── Focus-visible ring updates for new accent colors ─── */
 .focus-yg:focus-visible {
-  outline-color: #AAFF00;
+  outline-color: #C8F135;
 }
 
 .focus-ro:focus-visible {

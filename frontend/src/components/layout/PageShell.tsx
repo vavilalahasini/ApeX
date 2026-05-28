@@ -2,18 +2,18 @@
 
 import { lazy, Suspense } from "react";
 import { AppProviders } from "@/components/providers/AppProviders";
-import { CustomCursor } from "@/components/cursor/CustomCursor";
 import { CinematicBackground } from "@/components/effects/CinematicBackground";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingGlassNavbar } from "@/components/layout/FloatingGlassNavbar";
 import { Hero } from "@/components/sections/Hero";
-import { Services } from "@/components/sections/Services";
-import { Marquee } from "@/components/sections/Marquee";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { JsonLd } from "@/components/SEO/JsonLd";
 import { serviceSchema, breadcrumbSchema } from "@/lib/seo";
 
-// Lazy load sections below hero for TBT reduction
+// Lazy load non-critical components for better initial load performance
+const CustomCursor = lazy(() => import("@/components/cursor/CustomCursor").then(m => ({ default: m.CustomCursor })));
+const Services = lazy(() => import("@/components/sections/Services").then(m => ({ default: m.Services })));
+const Marquee = lazy(() => import("@/components/sections/Marquee").then(m => ({ default: m.Marquee })));
 const Portfolio = lazy(() => import("@/components/sections/Portfolio").then(m => ({ default: m.Portfolio })));
 const Testimonials = lazy(() => import("@/components/sections/Testimonials").then(m => ({ default: m.Testimonials })));
 const Contact = lazy(() => import("@/components/sections/Contact").then(m => ({ default: m.Contact })));
@@ -29,6 +29,10 @@ function SectionFallback() {
   );
 }
 
+function CursorFallback() {
+  return null; // Custom cursor is non-critical, no fallback needed
+}
+
 export function PageShell() {
   const breadcrumbData = [
     { name: "Home", item: "https://apex-studio-mu.vercel.app/" },
@@ -41,14 +45,20 @@ export function PageShell() {
       <JsonLd data={serviceSchema("Brand Identity Design", "Complete brand strategy and visual identity systems")} />
       <JsonLd data={serviceSchema("UI/UX Design", "User-centered interface design with focus on conversion")} />
       <JsonLd data={breadcrumbSchema(breadcrumbData)} />
-      <CustomCursor />
+      <Suspense fallback={<CursorFallback />}>
+        <CustomCursor />
+      </Suspense>
       <CinematicBackground />
       <div className="relative z-[1]">
         <FloatingGlassNavbar />
         <main id="main-content">
           <Hero />
-          <Services />
-          <Marquee />
+          <Suspense fallback={<SectionFallback />}>
+            <Services />
+          </Suspense>
+          <Suspense fallback={<SectionFallback />}>
+            <Marquee />
+          </Suspense>
           <Suspense fallback={<SectionFallback />}>
             <Portfolio />
           </Suspense>
