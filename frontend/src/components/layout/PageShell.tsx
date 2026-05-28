@@ -1,19 +1,33 @@
 "use client";
 
+import { lazy, Suspense } from "react";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { CustomCursor } from "@/components/cursor/CustomCursor";
 import { CinematicBackground } from "@/components/effects/CinematicBackground";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingGlassNavbar } from "@/components/layout/FloatingGlassNavbar";
-import { Contact } from "@/components/sections/Contact";
 import { Hero } from "@/components/sections/Hero";
-import { Marquee } from "@/components/sections/Marquee";
-import { Portfolio } from "@/components/sections/Portfolio";
 import { Services } from "@/components/sections/Services";
-import { Testimonials } from "@/components/sections/Testimonials";
+import { Marquee } from "@/components/sections/Marquee";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { JsonLd } from "@/components/SEO/JsonLd";
 import { serviceSchema, breadcrumbSchema } from "@/lib/seo";
+
+// Lazy load sections below hero for TBT reduction
+const Portfolio = lazy(() => import("@/components/sections/Portfolio").then(m => ({ default: m.Portfolio })));
+const Testimonials = lazy(() => import("@/components/sections/Testimonials").then(m => ({ default: m.Testimonials })));
+const Contact = lazy(() => import("@/components/sections/Contact").then(m => ({ default: m.Contact })));
+
+function SectionFallback() {
+  return (
+    <div className="min-h-[400px] flex items-center justify-center">
+      <div className="animate-pulse space-y-4 w-full max-w-4xl">
+        <div className="h-8 bg-gray-800 rounded w-1/3" />
+        <div className="h-32 bg-gray-800 rounded" />
+      </div>
+    </div>
+  );
+}
 
 export function PageShell() {
   const breadcrumbData = [
@@ -35,11 +49,17 @@ export function PageShell() {
           <Hero />
           <Services />
           <Marquee />
-          <Portfolio />
+          <Suspense fallback={<SectionFallback />}>
+            <Portfolio />
+          </Suspense>
           <ErrorBoundary>
-            <Testimonials />
+            <Suspense fallback={<SectionFallback />}>
+              <Testimonials />
+            </Suspense>
           </ErrorBoundary>
-          <Contact />
+          <Suspense fallback={<SectionFallback />}>
+            <Contact />
+          </Suspense>
         </main>
         <Footer />
       </div>

@@ -1,14 +1,21 @@
 "use client";
 
 import Lenis from "lenis";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   const reducedMotion = usePrefersReducedMotion();
+  const [mounted, setMounted] = useState(false);
+
+  // Delay Lenis initialization to reduce TBT
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion || !mounted) return;
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -28,7 +35,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       cancelAnimationFrame(rafId);
       lenis.destroy();
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, mounted]);
 
   return <>{children}</>;
 }

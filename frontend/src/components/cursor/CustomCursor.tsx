@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCustomCursorEnabled } from "@/hooks/useCustomCursorEnabled";
 
 const INTERACTIVE =
@@ -14,6 +14,7 @@ type Vec2 = { x: number; y: number };
 
 export function CustomCursor() {
   const enabled = useCustomCursorEnabled();
+  const [mounted, setMounted] = useState(false);
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
 
@@ -24,8 +25,14 @@ export function CustomCursor() {
   const hovering = useRef(false);
   const rafId = useRef(0);
 
+  // Delay cursor initialization to reduce TBT
   useEffect(() => {
-    if (!enabled) return;
+    const timer = setTimeout(() => setMounted(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!enabled || !mounted) return;
 
     const onMove = (e: MouseEvent) => {
       let x = e.clientX;
@@ -86,9 +93,9 @@ export function CustomCursor() {
       document.removeEventListener("mouseover", onOver);
       cancelAnimationFrame(rafId.current);
     };
-  }, [enabled]);
+  }, [enabled, mounted]);
 
-  if (!enabled) return null;
+  if (!enabled || !mounted) return null;
 
   return (
     <div className="custom-cursor" aria-hidden>
