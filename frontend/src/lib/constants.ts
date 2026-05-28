@@ -1,4 +1,5 @@
-import type { PortfolioProject, Testimonial } from "@/types";
+import type { PortfolioProject } from "@/lib/types";
+import type { Testimonial } from "@/types";
 
 export const NAV_LINKS = [
   { label: "Services", href: "#services" },

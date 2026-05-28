@@ -4,24 +4,12 @@ import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Button } from "@/components/ui/Button";
-
-interface CaseStudyDetails {
-  title: string;
-  category: string;
-  description: string;
-  challenges: string[];
-  solutions: string[];
-  results: string[];
-  technologies: string[];
-  liveUrl?: string;
-  caseStudyUrl?: string;
-  images?: string[];
-}
+import type { PortfolioProject } from "@/lib/types";
 
 interface CaseStudyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  project: CaseStudyDetails | null;
+  project: PortfolioProject | null;
 }
 
 export function CaseStudyModal({ isOpen, onClose, project }: CaseStudyModalProps) {
@@ -48,7 +36,9 @@ export function CaseStudyModal({ isOpen, onClose, project }: CaseStudyModalProps
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
-  if (!project) return null;
+  if (!project || !project.caseStudy) return null;
+
+  const { title, category, caseStudy } = project;
 
   return (
     <AnimatePresence>
@@ -82,13 +72,13 @@ export function CaseStudyModal({ isOpen, onClose, project }: CaseStudyModalProps
                 <div className="flex items-start justify-between mb-8">
                   <div>
                     <span className="text-xs uppercase tracking-[0.2em] text-text-muted mb-2 block">
-                      {project.category}
+                      {category}
                     </span>
                     <h2
                       id="case-study-title"
                       className="font-[family-name:var(--font-syne)] text-3xl md:text-4xl font-bold tracking-tight text-text-primary"
                     >
-                      {project.title}
+                      {title}
                     </h2>
                   </div>
                   <button
@@ -104,14 +94,14 @@ export function CaseStudyModal({ isOpen, onClose, project }: CaseStudyModalProps
 
                 {/* Description */}
                 <p className="text-lg text-text-secondary mb-8 leading-relaxed">
-                  {project.description}
+                  {caseStudy.description}
                 </p>
 
                 {/* Challenges */}
                 <div className="mb-8">
                   <h3 className="text-sm uppercase tracking-[0.2em] text-text-muted mb-4">Challenges</h3>
                   <ul className="space-y-2">
-                    {project.challenges.map((challenge, index) => (
+                    {caseStudy.challenges.map((challenge, index) => (
                       <li key={index} className="flex items-start gap-3 text-text-secondary">
                         <span className="text-[#AAFF00] mt-1">•</span>
                         <span>{challenge}</span>
@@ -124,7 +114,7 @@ export function CaseStudyModal({ isOpen, onClose, project }: CaseStudyModalProps
                 <div className="mb-8">
                   <h3 className="text-sm uppercase tracking-[0.2em] text-text-muted mb-4">Solutions</h3>
                   <ul className="space-y-2">
-                    {project.solutions.map((solution, index) => (
+                    {caseStudy.solutions.map((solution, index) => (
                       <li key={index} className="flex items-start gap-3 text-text-secondary">
                         <span className="text-[#AAFF00] mt-1">✓</span>
                         <span>{solution}</span>
@@ -137,7 +127,7 @@ export function CaseStudyModal({ isOpen, onClose, project }: CaseStudyModalProps
                 <div className="mb-8">
                   <h3 className="text-sm uppercase tracking-[0.2em] text-text-muted mb-4">Results</h3>
                   <ul className="space-y-2">
-                    {project.results.map((result, index) => (
+                    {caseStudy.results.map((result, index) => (
                       <li key={index} className="flex items-start gap-3 text-text-secondary">
                         <span className="text-[#AAFF00] mt-1">★</span>
                         <span>{result}</span>
@@ -147,11 +137,11 @@ export function CaseStudyModal({ isOpen, onClose, project }: CaseStudyModalProps
                 </div>
 
                 {/* Technologies */}
-                {project.technologies.length > 0 && (
+                {caseStudy.technologies.length > 0 && (
                   <div className="mb-8">
                     <h3 className="text-sm uppercase tracking-[0.2em] text-text-muted mb-4">Technologies</h3>
                     <div className="flex flex-wrap gap-2">
-                      {project.technologies.map((tech, index) => (
+                      {caseStudy.technologies.map((tech, index) => (
                         <span
                           key={index}
                           className="px-3 py-1 text-sm rounded-full bg-white/5 border border-white/10 text-text-secondary"
@@ -165,25 +155,14 @@ export function CaseStudyModal({ isOpen, onClose, project }: CaseStudyModalProps
 
                 {/* Action Buttons */}
                 <div className="flex flex-wrap gap-4 pt-4 border-t border-white/10">
-                  {project.liveUrl && (
+                  {caseStudy.liveUrl && (
                     <Button
-                      href={project.liveUrl}
+                      href={caseStudy.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       size="md"
                     >
                       View Live Site →
-                    </Button>
-                  )}
-                  {project.caseStudyUrl && (
-                    <Button
-                      href={project.caseStudyUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      variant="ghost"
-                      size="md"
-                    >
-                      Read Full Case Study
                     </Button>
                   )}
                 </div>

@@ -10,14 +10,6 @@ export type Service = {
   icon: string;
 };
 
-export type PortfolioProject = {
-  title: string;
-  category: string;
-  gradient: string;
-  accent: string;
-  href: string;
-  slug: string;
-};
 
 export type Testimonial = {
   quote: string;

@@ -97,7 +97,7 @@ export function generateAltText(
 export function getOptimalQuality(): number {
   if (typeof window === "undefined") return 75;
   
-  const connection = (navigator as any).connection;
+  const connection = (navigator as Navigator & { connection?: { saveData: boolean; effectiveType: string } }).connection;
   if (connection) {
     if (connection.saveData) return 60;
     if (connection.effectiveType === "4g") return 85;

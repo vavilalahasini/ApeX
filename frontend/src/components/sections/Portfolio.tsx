@@ -6,7 +6,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { RevealGroup, RevealItem } from "@/components/ui/RevealGroup";
 import { CaseStudyModal } from "@/components/ui/CaseStudyModal";
 import { usePortfolio } from "@/hooks/useContent";
-import type { PortfolioProject } from "@/types";
+import type { PortfolioProject } from "@/lib/types";
 
 function ProjectCard({
   project,
@@ -143,7 +143,7 @@ export function Portfolio({ className }: { className?: string }) {
       <CaseStudyModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        project={selectedProject?.caseStudy || null}
+        project={selectedProject}
       />
     </section>
   );

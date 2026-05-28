@@ -66,7 +66,7 @@ export default async function RootLayout({
   const siteLd = websiteJsonLd();
 
   // Transform portfolio data for schema
-  const portfolioItems = portfolioData.projects.map((project: any) => ({
+  const portfolioItems = portfolioData.projects.map((project: { title: string; category: string; href: string }) => ({
     name: project.title,
     description: `${project.category} project - ${project.href}`,
     url: project.href,
